@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.mysql.jdbc.SQLError;
+
 import db.DB;
 import db.DbException;
 import model.DAO.SellerDAO;
@@ -96,8 +98,36 @@ public class SellerDaoJDBC implements SellerDAO {
 
 	@Override
 	public void deleteById(Integer id) {
-		// TODO Auto-generated method stub
+		PreparedStatement st = null;
 		
+		try {
+			
+			conn.setAutoCommit(false);
+			
+			st = conn.prepareStatement(
+					"DELETE FROM seller	WHERE Id = ?");
+			st.setInt(1, id);
+			
+			int linhasAfetadas = st.executeUpdate();
+			
+			if(linhasAfetadas == 0) {
+				throw new SQLException("Vendendor não encontrado!");
+			}
+			
+			conn.setAutoCommit(true);
+		}
+		catch(SQLException e) {
+			
+			try {
+				conn.rollback();
+				throw new DbException("Operação não realizada devido: "+e.getMessage());
+			}catch(SQLException e2) {
+				throw new DbException("Erro ao tentar voltar a operação!"+e2.getMessage());
+			}
+			
+		}finally {
+			DB.closeStatement(st);
+		}
 	}
 
 	@Override
