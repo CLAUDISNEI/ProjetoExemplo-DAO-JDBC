@@ -1,5 +1,6 @@
 package application;
 
+import java.util.List;
 import java.util.Scanner;
 
 import model.DAO.DaoFactory;
@@ -28,7 +29,13 @@ public class Program2 {
 		departmentDAO.update(dep);
 		System.out.println("Departamento alerado!\n"+dep.toString()); 
 		
-		System.out.println("=====Teste 4: Excluindo departamento no Banco de Dados pelo Id=====");
+		System.out.println("=====Teste 4: Buscando todos os departamentos em uma lista=====");
+		List<Department> lista = departmentDAO.findAll();
+		for(Department d: lista) {
+			System.out.println(d.toString());
+		}
+	
+		System.out.println("=====Teste 5: Excluindo departamento no Banco de Dados pelo Id=====");
 		System.out.print("Informe código do departamento : ");
 		int codDep = sc.nextInt();
 		departmentDAO.deleteById(codDep);
