@@ -6,9 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
-
-import com.mysql.jdbc.SQLError;
-
 import db.DB;
 import db.DbException;
 import model.DAO.DepartmentDAO;
@@ -96,7 +93,32 @@ public class DepartmentDaoJDBC implements DepartmentDAO {
 
 	@Override
 	public void deleteById(Integer id) {
-		// TODO Auto-generated method stub
+		PreparedStatement st = null;
+		
+		try {
+			conn.setAutoCommit(false);
+			
+			st = conn.prepareStatement(
+					"DELETE FROM department WHERE Id = ? ");
+			st.setInt(1, id);
+			
+			int registroApagado = st.executeUpdate();
+			
+			if(registroApagado == 0) {
+				throw new SQLException("Departamento não existe!");
+			}
+			conn.commit();
+		}catch(SQLException e){
+			try {
+				conn.rollback();
+				throw new DbException("Erro: "+e.getMessage());
+			}catch(SQLException e2) {
+				throw new DbException("Erro ao cancelar exclusão! \n\n"+e2.getMessage() );
+			}
+		}finally {
+			DB.closeStatement(st);
+		}
+				
 		
 	}
 

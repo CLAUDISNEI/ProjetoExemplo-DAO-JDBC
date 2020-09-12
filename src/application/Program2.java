@@ -11,25 +11,29 @@ public class Program2 {
 		
 		DepartmentDAO departmentDAO = DaoFactory.createDepartmentDao();
 		Scanner sc = new Scanner(System.in);
+		Department dep;
 		
-		/*System.out.println("=====Teste 1: Incluindo departamento no Banco de Dados=====");
-		Department novoDepartamento = new Department(null, "Automóveis");
-		departmentDAO.insert(novoDepartamento);
-		System.out.println("Departamento criado Id: "+novoDepartamento.getId());*/
+	    System.out.println("=====Teste 1: Incluindo departamento no Banco de Dados=====");
+	    dep = new Department(null, "Teste");
+		departmentDAO.insert(dep);
+		System.out.println("Departamento criado Id: "+dep.getId());
 		
 		System.out.println("=====Teste 2: Localizando departamento no Banco de Dados pelo Id=====");
-		//Department novoDepartamento = new Department(null, "Automóveis");
-		Department depAlterado = departmentDAO.findById(3);
-		System.out.println("Departamento localizado : "+ depAlterado.toString());
+		dep = departmentDAO.findById(3);
+		System.out.println("Departamento localizado : "+ dep.toString());
 		
 		System.out.println("=====Teste 3: Alterando departamento no Banco de Dados pelo Id=====");
-		depAlterado = departmentDAO.findById(3);
-		depAlterado.setNome("Moda Verão");
-		System.out.println("Novo departamento: "+depAlterado.toString());
-		departmentDAO.update(depAlterado);
-		System.out.println("Departamento alerado!");
+		dep = departmentDAO.findById(4);
+		dep.setNome("Livros");
+		departmentDAO.update(dep);
+		System.out.println("Departamento alerado!\n"+dep.toString()); 
 		
+		System.out.println("=====Teste 4: Excluindo departamento no Banco de Dados pelo Id=====");
+		System.out.print("Informe código do departamento : ");
+		int codDep = sc.nextInt();
+		departmentDAO.deleteById(codDep);
+		System.out.println("Departamento Excluido!");
 				 
-				
+		sc.close();	
 	}
 }
