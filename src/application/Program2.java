@@ -12,11 +12,16 @@ public class Program2 {
 		DepartmentDAO departmentDAO = DaoFactory.createDepartmentDao();
 		Scanner sc = new Scanner(System.in);
 		
-		System.out.println("=====Teste 1: Incluindo departamento no Banco de Dados=====");
+		/*System.out.println("=====Teste 1: Incluindo departamento no Banco de Dados=====");
 		Department novoDepartamento = new Department(null, "Automóveis");
 		departmentDAO.insert(novoDepartamento);
-		System.out.println("Departamento criado Id: "+novoDepartamento.getId());
-				
+		System.out.println("Departamento criado Id: "+novoDepartamento.getId());*/
+		
+		System.out.println("=====Teste 2: Localizando departamento no Banco de Dados pelo Id=====");
+		//Department novoDepartamento = new Department(null, "Automóveis");
+		Department depAlterado = departmentDAO.findById(3);
+		System.out.println("Departamento localizado : "+ depAlterado.toString());
+				 
 				
 	}
 }

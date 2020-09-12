@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import com.mysql.jdbc.SQLError;
+
 import db.DB;
 import db.DbException;
 import model.DAO.DepartmentDAO;
@@ -52,8 +54,31 @@ public class DepartmentDaoJDBC implements DepartmentDAO {
 
 	@Override
 	public void update(Department obj) {
-		// TODO Auto-generated method stub
+		PreparedStatement st = null;
 		
+		try {
+			conn.setAutoCommit(false);
+			
+			st = conn.prepareStatement(
+					"UPDATE department SET Name=? WHERE Id=?",Statement.RETURN_GENERATED_KEYS);
+			
+			st.setString(1, obj.getNome());
+			
+			int resultado = st.executeUpdate();
+			if(resultado == 0) {
+				throw new SQLException("Erro ao atualizar Departamento");
+			}
+			conn.commit();
+		}catch(SQLException e) {
+			try {
+				conn.rollback();
+				throw new DbException("Erro : " + e.getMessage());
+			}catch(SQLException e2 ) {
+				throw new DbException("Erro ao voltar a transação no B. Dados!");
+			}
+		}finally {
+			DB.closeStatement(st);
+		}
 	}
 
 	@Override
@@ -64,8 +89,30 @@ public class DepartmentDaoJDBC implements DepartmentDAO {
 
 	@Override
 	public Department findById(Integer id) {
-		// TODO Auto-generated method stub
-		return null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		
+		try {
+			st = conn.prepareStatement(
+					"SELECT department.* FROM department WHERE Id= ?");
+			st.setInt(1, id);
+			
+			rs = st.executeQuery();
+			if(rs.next()) {
+				Department dep = new Department(rs.getInt("Id"), rs.getString("Name"));
+				return dep;
+			}
+			else {
+				throw new SQLException("Departamento não encontrado!");
+			}
+		}catch(SQLException e) {
+			throw new DbException("Erro: "+e.getMessage());
+		}
+		finally {
+			DB.closeResultset(rs);
+			DB.closeStatement(st);
+		}
+		
 	}
 
 	@Override
