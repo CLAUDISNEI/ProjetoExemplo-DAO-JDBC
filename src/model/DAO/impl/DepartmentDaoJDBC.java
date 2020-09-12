@@ -27,6 +27,9 @@ public class DepartmentDaoJDBC implements DepartmentDAO {
 		PreparedStatement st = null;
 		
 		try {
+			
+			conn.setAutoCommit(false);
+			
 			st = conn.prepareStatement(
 					"INSERT INTO department (Name) VALUES(?)",Statement.RETURN_GENERATED_KEYS);
 			st.setString(1, obj.getNome());
@@ -35,7 +38,7 @@ public class DepartmentDaoJDBC implements DepartmentDAO {
 			
 			//código para obter o Id criado no banco de dados e associalo ao objeto 
 			//fornecido como parâmetro
-			if(linhaIncluida> 0) {
+			if(linhaIncluida > 0) {
 				ResultSet rs = st.getGeneratedKeys();
 				if(rs.next()) {
 					int id = rs.getInt(1);
@@ -43,9 +46,17 @@ public class DepartmentDaoJDBC implements DepartmentDAO {
 				}
 				DB.closeResultset(rs);
 			}
-					
+			else {
+				throw new SQLException("Erro ao criar novo Departamento");
+			}
+			conn.commit();					
 		}catch(SQLException e) {
-			throw new DbException("Erro ao criar departamento!\n\\n"+e.getMessage());
+			try {
+				conn.rollback();
+				throw new DbException("Erro: "+e.getMessage());
+			}catch(SQLException e2) {
+				throw new DbException("Erro ao cancelar criação!: "+e2.getMessage());
+			}
 		}finally {
 			DB.closeStatement(st);
 		
@@ -60,13 +71,15 @@ public class DepartmentDaoJDBC implements DepartmentDAO {
 			conn.setAutoCommit(false);
 			
 			st = conn.prepareStatement(
-					"UPDATE department SET Name=? WHERE Id=?",Statement.RETURN_GENERATED_KEYS);
+					"UPDATE department SET Name = ? WHERE Id = ?");
 			
 			st.setString(1, obj.getNome());
+			st.setInt(2, obj.getId());
 			
 			int resultado = st.executeUpdate();
+			
 			if(resultado == 0) {
-				throw new SQLException("Erro ao atualizar Departamento");
+				throw new SQLException("Departamento não encontrado!");
 			}
 			conn.commit();
 		}catch(SQLException e) {

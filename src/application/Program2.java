@@ -21,6 +21,14 @@ public class Program2 {
 		//Department novoDepartamento = new Department(null, "Automóveis");
 		Department depAlterado = departmentDAO.findById(3);
 		System.out.println("Departamento localizado : "+ depAlterado.toString());
+		
+		System.out.println("=====Teste 3: Alterando departamento no Banco de Dados pelo Id=====");
+		depAlterado = departmentDAO.findById(3);
+		depAlterado.setNome("Moda Verão");
+		System.out.println("Novo departamento: "+depAlterado.toString());
+		departmentDAO.update(depAlterado);
+		System.out.println("Departamento alerado!");
+		
 				 
 				
 	}
